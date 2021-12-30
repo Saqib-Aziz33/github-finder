@@ -1,4 +1,4 @@
-import { useState, useContext } from "react/cjs/react.development"
+import { useState, useContext } from "react"
 // context
 import GithubContext from "../../context/github/GithubContext"
 import AlertContext from "../../context/alert/AlertContext"
