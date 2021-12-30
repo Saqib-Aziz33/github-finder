@@ -2,12 +2,14 @@ import { useState, useContext } from "react/cjs/react.development"
 // context
 import GithubContext from "../../context/github/GithubContext"
 import AlertContext from "../../context/alert/AlertContext"
+import {searchUsers} from '../../context/github/GithubAction'
 
 const UserSearch = () => {
     const [text, setText] = useState('')
 
+
     // context
-    const {users, searchUsers, clearSearch} = useContext(GithubContext)
+    const {users, dispatch} = useContext(GithubContext)
     const {setAlert} = useContext(AlertContext)
 
     function handleTextChange(e){
@@ -15,12 +17,17 @@ const UserSearch = () => {
         // console.log(e.currentTarget.value)
     }
 
-    function handleSubmit(e){
+    async function handleSubmit(e){
         e.preventDefault()
         if(text.length === 0){
             return setAlert('Textfield is empty', 'error')
         }
-        searchUsers(text)
+        dispatch({type: 'SET_LOADING'})
+        const users = await searchUsers(text)
+        dispatch({
+            type: 'GET_USERS',
+            payload: users
+        })
         setText('')
     }
 
@@ -42,7 +49,7 @@ const UserSearch = () => {
             </div>
             {users.length > 0 && (
                 <div>
-                    <button onClick={clearSearch} className="btn btn-ghost btn-lg">Clear</button>
+                    <button onClick={() => dispatch({type: 'CLEAR_SEARCH'})} className="btn btn-ghost btn-lg">Clear</button>
                 </div>
             )}
         </div>

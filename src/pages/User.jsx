@@ -3,13 +3,14 @@ import { useParams, Link } from "react-router-dom"
 import { FaCodepen, FaStore, FaUserFriends, FaUsers } from 'react-icons/fa'
 // context
 import GithubContext from "../context/github/GithubContext"
+import {getUserAndRepos} from '../context/github/GithubAction'
 // componenets
 import Spinner from '../components/layout/Spinner'
 import RepoList from "../components/repos/RepoList"
 
 
 const User = () => {
-    const {user, getUser, loading, getRepos, repos} = useContext(GithubContext)
+    const {user, dispatch, loading, repos} = useContext(GithubContext)
 
     // destructure from user data
     const { name, type, avatar_url, location, bio, blog, twitter_username, login, html_url, followers, following, public_repos, public_gists, hireable} = user
@@ -17,8 +18,14 @@ const User = () => {
     const params = useParams()
 
     useEffect(() => {
-        getUser(params.login)
-        getRepos(params.login)
+        dispatch({type: 'SET_LOADING'})
+        const getUserData = async () => {
+          const userData = await getUserAndRepos(params.login)
+          dispatch({type: 'GET_USER_AND_REPOS', payload: userData})
+        }
+
+        getUserData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     
     if(!loading){
